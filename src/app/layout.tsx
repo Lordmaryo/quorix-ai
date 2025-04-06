@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import Navbar from "@/components/custom/Navbar";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
+import ModelProvider from "@/components/custom/ModelProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,12 +31,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SidebarProvider>
-      <ClerkProvider>
-        <html lang="en" className={cn("dark")}>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
+    <html lang="en" className={cn("dark")}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <SidebarProvider>
+          <ClerkProvider>
             <AppSidebar />
             <main className="max-w-4xl mx-auto">
               <div className="flex items-center justify-between px-4 py-2 w-full fixed top-0 left-0 z-999">
@@ -43,11 +44,12 @@ export default function RootLayout({
                 <Navbar />
               </div>
               <div className="pt-10 min-h-screen px-4">{children}</div>
+              <ModelProvider />
             </main>
             <Toaster />
-          </body>
-        </html>
-      </ClerkProvider>
-    </SidebarProvider>
+          </ClerkProvider>
+        </SidebarProvider>
+      </body>
+    </html>
   );
 }

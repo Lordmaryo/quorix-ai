@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { openAi } from "../config/config";
+import { openAi, optimizedMessages } from "../config/config";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
+import { checkApiLimit, increaseApiLimit } from "@/lib/apiLimit";
+
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
@@ -11,11 +14,22 @@ export async function POST(req: Request) {
       return new NextResponse("Message is required", { status: 400 });
     }
 
+    const freeTrial = await checkApiLimit();
+
+    if (!freeTrial) {
+      return new NextResponse("Free trial has expired", { status: 402 });
+    }
+
+    const optimizedMessage = optimizedMessages(messages);
+
     const completion = await openAi.chat.completions.create({
-      model: process.env.DEEPSEEK_MODEL!,
+      model: "deepseek/deepseek-r1:free" ,
       stream: true,
-      messages,
+      messages: optimizedMessage as ChatCompletionMessageParam[],
+      temperature: 2,
     });
+
+    await increaseApiLimit();
 
     const encoder = new TextEncoder();
 
@@ -38,14 +52,17 @@ export async function POST(req: Request) {
     });
 
     const stream = new Response(readableStream, {
-      headers: { "Content-Type": "text/event-stream" },
+      headers: {
+        "Content-Type": "text/event-stream",
+        "X-Accel-Buffering": "no",
+      },
     });
-
-    console.log("Stream response:", stream);
 
     return stream;
   } catch (error) {
     console.error("Error in POST conversation route:", error);
-    return new NextResponse("Internal server error", { status: 500 });
+    return new NextResponse("Something went wrong, please try again later", {
+      status: 500,
+    });
   }
 }

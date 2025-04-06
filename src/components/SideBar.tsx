@@ -1,4 +1,6 @@
-import { Grip, Home, MessageCircle, Settings } from "lucide-react";
+"use client";
+
+import { Crown, Grip, Home, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -11,6 +13,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 const items = [
   {
@@ -26,6 +30,8 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const router = useRouter();
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -50,6 +56,20 @@ export function AppSidebar() {
         </SidebarGroup>
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Button
+                    variant={"default"}
+                    className="cursor-pointer mb-2"
+                    onClick={() => router.push("/pricing")}
+                  >
+                    <span>Upgrade</span>
+                    <Crown />
+                  </Button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>

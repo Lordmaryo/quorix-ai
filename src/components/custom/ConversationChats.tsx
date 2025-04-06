@@ -7,16 +7,36 @@ import { copyToClipboard, markdownComponents } from "./MarkdownComponent";
 
 interface ConversationChatsProps {
   conversation: ChatCompletionMessageParam[];
+  loading: boolean;
+  error: string | number | null;
 }
 
-const ConversationChats = ({ conversation }: ConversationChatsProps) => {
+const ConversationChats = ({
+  conversation,
+  loading,
+  error,
+}: ConversationChatsProps) => {
   return (
     <div className="mt-4 w-full max-w-4xl mx-auto font-sans">
       {conversation.map((msg, index) => {
         const isUser = msg.role === "user";
-        const messageContent = Array.isArray(msg.content)
+        let messageContent = Array.isArray(msg.content)
           ? msg.content.join("")
           : msg.content || "";
+
+        if (error) {
+          return
+        }
+
+        if (loading && index === conversation.length - 1) {
+          return (
+            <div key={index} className="flex justify-start mb-6">
+              <div className="relative max-w-3xl text-gray-200 p-4 pb-0 mb-4">
+                <p className="animate-pulse">Thinking...</p>
+              </div>
+            </div>
+          );
+        }
 
         return (
           <div
@@ -24,11 +44,11 @@ const ConversationChats = ({ conversation }: ConversationChatsProps) => {
             className={`flex mb-6 ${isUser ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`relative max-w-3xl rounded-lg ${
-                isUser ? "bg-zinc-900 text-gray-100" : "text-gray-100"
+              className={`relative max-w-3xl rounded-xl  ${
+                isUser ? "bg-zinc-900 text-gray-100" : " text-gray-100"
               }`}
             >
-              <div className="p-4 pb-6">
+              <div className="p-4 pb-0 mb-4">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={markdownComponents}
@@ -38,7 +58,7 @@ const ConversationChats = ({ conversation }: ConversationChatsProps) => {
               </div>
               {!isUser && (
                 <button
-                  className="absolute bottom-2 right-2 p-1 text-gray-400 hover:text-white transition"
+                  className="absolute -bottom-2 left-2 p-1 text-gray-400 hover:text-white transition"
                   onClick={() => {
                     copyToClipboard(messageContent);
                   }}

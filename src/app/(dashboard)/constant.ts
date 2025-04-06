@@ -19,3 +19,7 @@ export const validatePrompt = (prompt: string) => {
 
   return error;
 };
+
+// Api limit
+
+export const MAX_FREE_COUNT = 7;

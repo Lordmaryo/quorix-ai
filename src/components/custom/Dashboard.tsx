@@ -10,11 +10,11 @@ const Dashboard = () => {
 
   return (
     <div className="py-4 space-y-10">
-      {/* <Header
+      <Header
         image={conversation?.image}
         title={conversation?.name}
         description={conversation?.description}
-      /> */}
+      />
 
       <Form />
     </div>
